@@ -1,0 +1,29 @@
+[package]
+name = "lez-multisig-bench-guest"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+# Own workspace and own lockfile: it cross-compiles to
+# riscv32im-risc0-zkvm-elf, and it carries curve patches the host side
+# deliberately does not.
+[workspace]
+
+[dependencies]
+risc0-zkvm = { version = "=3.0.5", default-features = false, features = ["std"] }
+lee_core = { git = "https://github.com/logos-blockchain/logos-execution-zone", tag = "v0.3.0" }
+borsh = { version = "1", features = ["derive"] }
+k256 = { version = "=0.13.3", default-features = false, features = ["ecdsa", "arithmetic", "schnorr"] }
+
+# RISC Zero's accelerated curve arithmetic and SHA-256. LEZ patches only
+# `keccak`, so its own guests do both in software. These numbers are of the
+# accelerated configuration, which is the one worth shipping; the unaccelerated
+# one is not measured here.
+[patch.crates-io]
+k256 = { git = "https://github.com/risc0/RustCrypto-elliptic-curves", tag = "k256/v0.13.3-risczero.1" }
+crypto-bigint = { git = "https://github.com/risc0/RustCrypto-crypto-bigint", tag = "v0.5.2-risczero.1" }
+sha2 = { git = "https://github.com/risc0/RustCrypto-hashes", tag = "sha2-v0.10.6-risczero.0" }
+
+[profile.release]
+lto = true
+codegen-units = 1

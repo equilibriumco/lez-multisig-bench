@@ -1,0 +1,21 @@
+# Settles one M-of-N approval check on a LEZ network.
+#
+# Its own workspace: it pulls the wallet, which the measurement crate
+# deliberately does not depend on.
+[package]
+name = "settle"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[workspace]
+
+[dependencies]
+lee = { git = "https://github.com/logos-blockchain/logos-execution-zone", tag = "v0.3.0", features = ["prove"] }
+# Builds the transaction around the proof, signs it and submits it.
+wallet = { git = "https://github.com/logos-blockchain/logos-execution-zone", tag = "v0.3.0" }
+borsh = "1.5.7"
+# Signing the approvals, as the guest verifies them; `schnorr` carries BIP-340.
+k256 = { version = "0.13.3", features = ["ecdsa", "arithmetic", "schnorr"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+anyhow = "1"

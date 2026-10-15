@@ -1,0 +1,29 @@
+# What an M-of-N approval check costs inside LEZ's privacy-preserving circuit.
+#
+# `execute_and_prove` runs a program and proves it through the privacy circuit
+# with nothing else attached: no sequencer, no Bedrock, no wallet. That makes
+# each cost measurable as a subtraction between two programs over the same
+# accounts and the same instruction.
+[package]
+name = "lez-multisig-bench"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[build-dependencies]
+risc0-build = "3.0.5"
+
+[package.metadata.risc0]
+methods = ["guest"]
+
+[dev-dependencies]
+# LEZ at the version every figure here is measured against.
+lee = { git = "https://github.com/logos-blockchain/logos-execution-zone", tag = "v0.3.0", features = ["prove"] }
+lee_core = { git = "https://github.com/logos-blockchain/logos-execution-zone", tag = "v0.3.0", features = ["host"] }
+# Deriving the viewing and nullifier keys a private account is addressed by.
+key_protocol = { git = "https://github.com/logos-blockchain/logos-execution-zone", tag = "v0.3.0" }
+borsh = "1.5.7"
+# Refusing to publish a figure that development mode produced.
+risc0-zkvm = "=3.0.5"
+# Signing the approvals the guests verify; `schnorr` carries BIP-340.
+k256 = { version = "0.13.3", features = ["ecdsa", "arithmetic", "schnorr"] }
