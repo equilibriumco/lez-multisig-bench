@@ -46,11 +46,25 @@ Deploy the program first, with `wallet program-loader deploy`. Give it `approval
 
 `settle` returns as soon as the sequencer accepts the transaction. Acceptance is not inclusion. Check with `getTransaction` against the transaction hash.
 
+One of these transactions is on the public LEZ testnet. It verifies five BIP-340 approvals:
+
+```
+8efcba7d6395bfe87c81c4b96ff8a6b45bf03108569b646f6c2fd521386e6cc0   block 48422
+```
+
+The transaction carries the `approvals` image id in its program claim. The sequencer checks that id against the deployed program.
+
 ## What it does not measure
 
 - A full multisig. These are the pieces a multisig is built from. There is no multisig program here.
 - A transaction on a chain. `execute_and_prove` runs a program through the privacy circuit and nothing else: no sequencer, no Bedrock, no wallet. That keeps the subtraction clean. It also means these are lab numbers. `settle/` does submit one, but no figure here comes from it.
 - The cost with any other signature backend. The guests here patch in RISC Zero's forks of `k256`, `crypto-bigint` and `sha2`. Those speed up the curve arithmetic and the SHA-256 that BIP-340 uses for its challenge. LEZ patches only `keccak`, so its own guests do all of that in plain Rust, which costs more. Nothing here measures how much more, because no unpatched guest is proved. The patches are part of what these numbers assume.
+
+## A faster backend
+
+Everything above uses the accelerated `k256` path. A purpose-built BIP-340 backend over the same curve circuits is faster: 106,698 cycles per approval, against 267,647 on that path. The measurements are in [`logos-kanon`, branch `m0-addendum-a`](https://github.com/equilibriumco/logos-kanon/tree/m0-addendum-a). The backend is in `verifier-core/src/backend/bip340.rs`, the comparison in `bip340-bench`, and the same check inside a LEZ program in `m0/v0.3_rerun/lez-probe`.
+
+It is not used here. The curve library under it is a release candidate, and everything measured here is released code.
 
 ## Assumptions worth knowing
 
