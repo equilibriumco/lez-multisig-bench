@@ -56,7 +56,7 @@ The transaction carries the `approvals` image id in its program claim. The seque
 
 ## What it does not measure
 
-- A full multisig. These are the pieces a multisig is built from. There is no multisig program here.
+- A full multisig. These are the pieces a multisig is built from. There is no multisig program here. One exists in [`logos-ostrakon`](https://github.com/equilibriumco/logos-ostrakon), written for LEZ v0.4's actor model and measured there; it supersedes these figures for anything but the v0.3.0 comparison.
 - A transaction on a chain. `execute_and_prove` runs a program through the privacy circuit and nothing else: no sequencer, no Bedrock, no wallet. That keeps the subtraction clean. It also means these are lab numbers. `settle/` does submit one, but no figure here comes from it.
 - The cost with any other signature backend. The guests here patch in RISC Zero's forks of `k256`, `crypto-bigint` and `sha2`. Those speed up the curve arithmetic and the SHA-256 that BIP-340 uses for its challenge. LEZ patches only `keccak`, so its own guests do all of that in plain Rust, which costs more. Nothing here measures how much more, because no unpatched guest is proved. The patches are part of what these numbers assume.
 
